@@ -24,6 +24,29 @@ app.get('/user', async (req , res) => {
     }
 })
 
+app.delete('/user', async (req,res) => {
+    try{
+        const userId = req.body.userId;
+        await User.findByIdAndDelete(userId);
+        res.send("User deleted successfully");
+    }
+    catch(err){
+        res.status(400).send("Something went wrong");
+    }
+})
+
+app.patch('/user', async (req,res) => {
+    try{
+        const userId = req.body.userId;
+        const data = req.body;
+        await User.findByIdAndUpdate(userId, data);
+        res.send("User Updated successfully");
+    }
+    catch(err){
+        res.status(400).send("Something went wrong");
+    }
+})
+
 app.get('/feed' , async (req,res) => {
     try{
         // find method is used to search data from the database based on the condition which we pass inside the object , empty object means give all the data which is present inside user collection.
