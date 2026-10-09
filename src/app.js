@@ -13,6 +13,28 @@ app.post('/signup', async (req,res) => {
     res.status(201).send("User created successfully");
 })
 
+app.get('/user', async (req , res) => {
+    try{
+        const userEmail = req.body.emailId;
+        const user = await User.find({ emailId : userEmail })
+        res.send(user);
+    }
+    catch (err){
+        res.status(400).send("Something went wrong")
+    }
+})
+
+app.get('/feed' , async (req,res) => {
+    try{
+        // find method is used to search data from the database based on the condition which we pass inside the object , empty object means give all the data which is present inside user collection.
+        const users = await User.find({});
+        res.send(users);
+    }
+    catch (err){
+        res.status(400).send("Something went wrong")
+    }
+});
+
 connectDB()
 .then(()=> {
     console.log("Database connected successfully");
