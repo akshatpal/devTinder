@@ -4,15 +4,13 @@ const app = express();
 const {adminAuth} = require('./middlewares/auth');
 const User = require("./models/user");
 
+// this middleware is used to convert the data or request in json format.
+app.use(express.json());
+
 app.post('/signup', async (req,res) => {
-    const newUser = new User({
-        firstName: 'Akshat',
-        lastName: 'Pal',
-        emailId: 'uyguyg@kshdids.com'
-    })
+    const newUser = new User(req.body)
     await newUser.save();
     res.status(201).send("User created successfully");
-
 })
 
 connectDB()
