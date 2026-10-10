@@ -8,9 +8,14 @@ const User = require("./models/user");
 app.use(express.json());
 
 app.post('/signup', async (req,res) => {
-    const newUser = new User(req.body)
-    await newUser.save();
-    res.status(201).send("User created successfully");
+    try{
+        const newUser = new User(req.body)
+        await newUser.save();
+        res.status(201).send("User created successfully");
+    }
+    catch(err){
+        res.status(401).send("Validation failed "+ err.message);
+    }
 })
 
 app.get('/user', async (req , res) => {
