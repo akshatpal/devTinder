@@ -3,15 +3,49 @@ const connectDB = require("./config/database");
 const app = express();
 const {adminAuth} = require('./middlewares/auth');
 const User = require("./models/user");
+const {validateSignUpData} = require('./utils/vaidation');
+const bcrypt = require('bcrypt');
 
 // this middleware is used to convert the data or request in json format.
 app.use(express.json());
 
 app.post('/signup', async (req,res) => {
     try{
-        const newUser = new User(req.body)
+        //validation of data
+        validateSignUpData(req);
+
+        //encrypting the password
+        const {firstName , lastName , emailId , password} = req.body;
+
+        const passwordHash = await bcrypt.hash(password, 10);
+        const newUser = new User({
+            firstName,
+            lastName,
+            emailId,
+            password: passwordHash
+        })
         await newUser.save();
         res.status(201).send("User created successfully");
+    }
+    catch(err){
+        res.status(401).send("Validation failed "+ err.message);
+    }
+})
+
+app.post('/login', async (req,res) => {
+    try{
+        const {emailId , password} = req.body;
+
+        const user = await User.findOne({emailId: emailId});
+        if(!user){
+            throw new Error("User not found");
+        }
+        const isCorrectPassword = await bcrypt.compare(password,user.password);
+        if(!isCorrectPassword){
+            throw new Error("Password is incorrect !!");
+        }else{
+            res.send("Login Successfull.");
+        }
     }
     catch(err){
         res.status(401).send("Validation failed "+ err.message);
